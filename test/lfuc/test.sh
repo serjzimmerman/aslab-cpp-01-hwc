@@ -1,39 +1,36 @@
+# Set up variables
+current_folder=${2:-./}
 base_folder="resources"
+passed=true
 
+# ASCII colors
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-current_folder=${2:-./}
-passed=true
+cd $current_folder/$base_folder
 
-for file in ${current_folder}/${base_folder}/test*.dat; do
+for file in test*.dat; do
+  # Total number of the tests found
+  count=`echo $file | grep -E -o [0-9]+`
 
-    # Total number of the tests found
-    count=`echo $file | egrep -o [0-9]+`
+  echo -n "Testing $green$file$reset ..."
 
-    echo -n "Testing ${green}${file}${reset} ... "
+  $1 < $file > ans.tmp
 
-    # Check if an argument to executable location has been passed to the program
-    if [ -z "$1" ]; then
-        bin/lfuc < $file > ${current_folder}/$base_folder/temp.dat
-    else
-        $1 < $file > ${current_folder}/$base_folder/temp.dat
-    fi
+  filename="ans${count}.dat"
 
-    # Compare inputs
-    if diff -Z ${current_folder}/${base_folder}/ans${count}.dat ${current_folder}/${base_folder}/temp.dat; then
-        echo "${green}Passed${reset}"
-    else
-        echo "${red}Failed${reset}"
-        passed=false
-    fi
+  if diff -Z $filename ans.tmp; then
+    echo "${green}Passed${reset}"
+  else
+    echo "${red}Failed${reset}"
+    passed=false
+  fi
 done
 
 if ${passed}
 then
-    exit 0
+  exit 0
 else
-    # Exit with the best number for an exit code
-    exit 666
+  exit 666
 fi
