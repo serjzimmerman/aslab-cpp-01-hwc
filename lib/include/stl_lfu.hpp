@@ -28,8 +28,7 @@ template <typename K, typename U> struct local_node_lfu_t {
   K m_key;
   U m_value;
 
-  local_node_lfu_t(K p_key, U p_val) : m_key{p_key}, m_value{p_val} {
-  }
+  local_node_lfu_t(K p_key, U p_val) : m_key{p_key}, m_value{p_val} {}
 };
 
 template <typename K, typename U> class local_list_lfu_t {
@@ -43,27 +42,19 @@ public:
   using it__ = typename std::list<node_t__>::iterator;
 
 private:
-
-  std::list<node_t__> m_list;
+  std::list<node_t__>         m_list;
   std::unordered_map<K, it__> m_map;
 
 public:
   W m_weight;
 
-  explicit local_list_lfu_t(W p_weight) : m_list{}, m_map{}, m_weight{p_weight} {
-  }
+  explicit local_list_lfu_t(W p_weight) : m_list{}, m_map{}, m_weight{p_weight} {}
 
-  const W &weight() const noexcept {
-    return m_weight;
-  }
+  const W &weight() const noexcept { return m_weight; }
 
-  auto size() const noexcept {
-    return m_list.size();
-  }
+  auto size() const noexcept { return m_list.size(); }
 
-  bool is_empty() const noexcept {
-    return m_list.empty();
-  }
+  bool is_empty() const noexcept { return m_list.empty(); }
 
   void push_front(node_t__ p_node) {
     m_list.push_front(p_node);
@@ -109,12 +100,10 @@ template <typename U, typename K = int> class lfu_t {
   using freq_list_node_t__ = detail::local_list_lfu_t<K, U>;
   using freq_node_it__ = typename std::list<freq_list_node_t__>::iterator;
 
-  std::list<freq_list_node_t__> m_freq_list;
+  std::list<freq_list_node_t__>         m_freq_list;
   std::unordered_map<K, freq_node_it__> m_weight_map;
 
-  bool is_last(freq_node_it__ p_iter) const {
-    return (std::next(p_iter) == m_freq_list.end());
-  }
+  bool is_last(freq_node_it__ p_iter) const { return (std::next(p_iter) == m_freq_list.end()); }
 
   // Returns node with weight "1" or create a new node with corresponding weight
   // if it doesn't already exist.
@@ -215,9 +204,7 @@ template <typename U, typename K = int> class lfu_t {
     m_weight_map.insert({p_key, least_weight_node()}); // Insert the new entry into the key-weight map.
   }
 
-  bool is_present(const K &p_key) const {
-    return (m_weight_map.find(p_key) != m_weight_map.end());
-  }
+  bool is_present(const K &p_key) const { return (m_weight_map.find(p_key) != m_weight_map.end()); }
 
 public:
   explicit lfu_t(std::size_t p_size) : m_size{p_size}, m_hits{0}, m_freq_list{}, m_weight_map{} {
@@ -226,13 +213,9 @@ public:
     }
   }
 
-  bool is_full() const noexcept {
-    return (m_weight_map.size() == m_size);
-  }
+  bool is_full() const noexcept { return (m_weight_map.size() == m_size); }
 
-  std::size_t get_hits() const noexcept {
-    return m_hits;
-  }
+  std::size_t get_hits() const noexcept { return m_hits; }
 
   template <typename F> U lookup(const K &p_key, F p_slow_get) {
     // Case 1. The entry is present in the cache. Then it gets promoted.

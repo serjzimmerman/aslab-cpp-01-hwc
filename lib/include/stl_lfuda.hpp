@@ -34,8 +34,7 @@ template <typename K, typename U> struct local_node_lfuda_t {
   W m_freq, m_weight;
 
   local_node_lfuda_t(K p_key, U p_val, W p_weight, W p_freq = 1)
-      : m_key{p_key}, m_value{p_val}, m_freq{p_freq}, m_weight{p_weight} {
-  }
+      : m_key{p_key}, m_value{p_val}, m_freq{p_freq}, m_weight{p_weight} {}
 };
 
 template <typename K, typename U> class local_list_lfuda_t {
@@ -50,20 +49,13 @@ public:
 
   using it__ = typename std::list<node_t__>::iterator;
 
-  local_list_lfuda_t(W p_weight) : m_list{}, m_weight{p_weight} {
-  }
+  local_list_lfuda_t(W p_weight) : m_list{}, m_weight{p_weight} {}
 
-  bool is_empty() const {
-    return m_list.empty();
-  }
+  bool is_empty() const { return m_list.empty(); }
 
-  auto size() const noexcept {
-    return m_list.size();
-  }
+  auto size() const noexcept { return m_list.size(); }
 
-  it__ front() {
-    return m_list.front();
-  }
+  it__ front() { return m_list.front(); }
 
   it__ last() {
     assert(!is_empty());
@@ -93,18 +85,16 @@ template <typename U, typename K = int> class lfuda_t {
   using W = std::size_t;
 
   std::size_t m_size, m_hits;
-  W m_age;
+  W           m_age;
 
   using local_node_t__ = detail::local_node_lfuda_t<K, U>;
   using local_list_t__ = detail::local_list_lfuda_t<K, U>;
   using local_list_it__ = typename local_list_t__::it__;
 
-  std::map<W, local_list_t__> m_weight_map;
+  std::map<W, local_list_t__>            m_weight_map;
   std::unordered_map<K, local_list_it__> m_key_it_map;
 
-  bool is_present(K p_key) const {
-    return (m_key_it_map.find(p_key) != m_key_it_map.end());
-  }
+  bool is_present(K p_key) const { return (m_key_it_map.find(p_key) != m_key_it_map.end()); }
 
   local_list_t__ &freq_node_with_weight(W p_weight) {
     auto inserted = m_weight_map.emplace(p_weight, p_weight);
@@ -126,9 +116,9 @@ template <typename U, typename K = int> class lfuda_t {
     assert(found != m_key_it_map.end());
     auto node_to_promote = found->second;
 
-    W old_weight = node_to_promote->m_weight; // This is the old weight of the node.
+    W     old_weight = node_to_promote->m_weight; // This is the old weight of the node.
     auto &old_local_list = m_weight_map.find(old_weight)->second;
-    W new_weight = ++node_to_promote->m_freq + m_age; // Increment the frequency and calculate next weight.
+    W     new_weight = ++node_to_promote->m_freq + m_age; // Increment the frequency and calculate next weight.
 
     // Here we handle the case when the current local list contains the single promoted element.
     auto found_next = m_weight_map.find(new_weight);
@@ -141,9 +131,9 @@ template <typename U, typename K = int> class lfuda_t {
     
     else {
 #endif
-      auto &new_freq_node = ((found_next == m_weight_map.end()) ? freq_node_with_weight(new_weight) : found_next->second);
-      new_freq_node.splice_upfront(old_local_list, node_to_promote); // Move the node to the next list.
-      remove_if_empty(old_weight);                                   // Clean up after ourselves.
+    auto &new_freq_node = ((found_next == m_weight_map.end()) ? freq_node_with_weight(new_weight) : found_next->second);
+    new_freq_node.splice_upfront(old_local_list, node_to_promote); // Move the node to the next list.
+    remove_if_empty(old_weight);                                   // Clean up after ourselves.
 #if 0
     }
 #endif
@@ -152,7 +142,7 @@ template <typename U, typename K = int> class lfuda_t {
   }
 
   void insert(const K &p_key, U p_val) {
-    W new_weight = m_age + 1;
+    W    new_weight = m_age + 1;
     auto to_insert = local_node_t__{p_key, p_val, new_weight};
     auto inserted = freq_node_with_weight(new_weight).push_front(to_insert);
     m_key_it_map.insert({p_key, inserted});
@@ -173,7 +163,8 @@ template <typename U, typename K = int> class lfuda_t {
     W new_weight = m_age + 1;
     m_weight_map.insert({new_weight, new_weight});
 
-    // Here i tried minimizing the memory allocations and deallocations. Turns out it actually makes the perfomance worse in test cases.
+    // Here i tried minimizing the memory allocations and deallocations. Turns out it actually makes the perfomance
+    // worse in test cases.
     auto found_next = m_weight_map.find(new_weight);
 #if 0
     if ((least_local_list.size() == 1) && (found_next == m_weight_map.end())) {
@@ -184,10 +175,10 @@ template <typename U, typename K = int> class lfuda_t {
 
     else {
 #endif
-      auto &new_freq_node = ((found_next == m_weight_map.end()) ? freq_node_with_weight(new_weight) : found_next->second);
-      new_freq_node.splice_upfront(least_local_list, to_evict);
-      m_key_it_map.insert({p_key, to_evict});
-      remove_if_empty(least_weight); // As always, cleanup after yourself.
+    auto &new_freq_node = ((found_next == m_weight_map.end()) ? freq_node_with_weight(new_weight) : found_next->second);
+    new_freq_node.splice_upfront(least_local_list, to_evict);
+    m_key_it_map.insert({p_key, to_evict});
+    remove_if_empty(least_weight); // As always, cleanup after yourself.
 #if 0
     }
 #endif
@@ -200,13 +191,9 @@ public:
     }
   }
 
-  bool is_full() const {
-    return (m_key_it_map.size() == m_size);
-  }
+  bool is_full() const { return (m_key_it_map.size() == m_size); }
 
-  std::size_t get_hits() const {
-    return m_hits;
-  }
+  std::size_t get_hits() const { return m_hits; }
 
   template <typename F> U lookup(K p_key, F p_slow_get) {
     // Case 1. The entry is present in the cache. Then it gets promoted.

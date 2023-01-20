@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
   }
 
   caches::lfu_t<int, int> cache{m};
-  slow_getter_t g{};
+  slow_getter_t           g{};
 
   auto lfu_start = std::chrono::high_resolution_clock::now();
 

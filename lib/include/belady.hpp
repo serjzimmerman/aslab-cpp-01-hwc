@@ -14,10 +14,10 @@
 #include <cassert>
 #include <deque>
 #include <functional>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <map>
 
 namespace caches {
 
@@ -113,9 +113,9 @@ template <typename T> class ideal_t {
   std::unordered_set<T> m_set;
 #endif
 
-  std::vector<T> m_vec;
+  std::vector<T>     m_vec;
   occurence_map_t<T> m_occur_map;
-  std::size_t m_size, m_hits;
+  std::size_t        m_size, m_hits;
 
   bool is_full() const noexcept {
     // Here we subtract one from size because an element with "0" index is basically garbage and holds all indexes that

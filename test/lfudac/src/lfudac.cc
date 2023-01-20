@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   }
 
   caches::lfuda_t<int, int> cache{m};
-  slow_getter_t g{};
+  slow_getter_t             g{};
 
   auto lfuda_start = std::chrono::high_resolution_clock::now();
 
