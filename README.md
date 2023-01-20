@@ -1,4 +1,4 @@
-# HWC
+# 01-hwc
 
 Introductory homework on caching algorithms in C++.
 
